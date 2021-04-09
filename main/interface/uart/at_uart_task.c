@@ -101,10 +101,10 @@ static const uint8_t esp_at_uart_parity_table[] = {UART_PARITY_DISABLE, UART_PAR
 #define AT_UART_BAUD_RATE_MAX                  5000000
 #define AT_UART_BAUD_RATE_MIN                       80
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
-#define CONFIG_AT_UART_PORT_TX_PIN_DEFAULT          18
-#define CONFIG_AT_UART_PORT_RX_PIN_DEFAULT          19
-#define CONFIG_AT_UART_PORT_CTS_PIN_DEFAULT         4
-#define CONFIG_AT_UART_PORT_RTS_PIN_DEFAULT         3
+#define CONFIG_AT_UART_PORT_TX_PIN_DEFAULT          7
+#define CONFIG_AT_UART_PORT_RX_PIN_DEFAULT          6
+#define CONFIG_AT_UART_PORT_CTS_PIN_DEFAULT         5
+#define CONFIG_AT_UART_PORT_RTS_PIN_DEFAULT         4
 #ifndef CONFIG_AT_UART_PORT
 #define CONFIG_AT_UART_PORT                         UART_NUM_1
 #endif
@@ -640,9 +640,7 @@ void at_status_callback (esp_at_status_type status)
         uart_disable_pattern_det_intr(esp_at_uart_port);
         break;
     case ESP_AT_STATUS_TRANSMIT:
-#if defined(CONFIG_IDF_TARGET_ESP32)
-        uart_enable_pattern_det_intr(esp_at_uart_port, '+', 3, ((APB_CLK_FREQ*20)/1000),((APB_CLK_FREQ*20)/1000), ((APB_CLK_FREQ*20)/1000));
-#endif
+        uart_enable_pattern_det_baud_intr(esp_at_uart_port, '+', 3, ((APB_CLK_FREQ*20)/1000),((APB_CLK_FREQ*20)/1000), ((APB_CLK_FREQ*20)/1000));
         break;
     }
 #endif

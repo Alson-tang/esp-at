@@ -17,6 +17,7 @@
 -  :ref:`AT+SLEEP <cmd-SLEEP>`：设置 sleep 模式
 -  :ref:`AT+SYSRAM <cmd-SYSRAM>`：查询当前剩余堆空间和最小堆空间
 -  :ref:`AT+SYSMSG <cmd-SYSMSG>`：查询/设置系统提示信息
+-  :ref:`AT+USERRAM <cmd-USERRAM>`：操作用户的空闲 RAM
 -  :ref:`AT+SYSFLASH <cmd-SYSFLASH>`：查询或读写 flash 用户分区
 -  [ESP32 Only] :ref:`AT+FS <cmd-FS>`：文件系统操作
 -  :ref:`AT+RFPOWER <cmd-RFPOWER>`：查询/设置 RF TX Power
@@ -80,7 +81,7 @@
 
 ::
 
-    AT+GMR  
+    AT+GMR
 
 **响应：**
 
@@ -96,10 +97,15 @@
 参数
 ^^^^
 
--  **<AT version info>**：AT 版本信息
--  **<SDK version info>**：SDK 版本信息
--  **<compile time>**：固件生成时间
--  **<Bin version>**: bin 版本信息
+-  **<AT version info>**：AT 核心库的版本信息，它们在 ``esp-at/components/at/lib/`` 目录下。代码是闭源的，无开放计划。
+-  **<SDK version info>**：AT 使用的平台 SDK 版本信息，它们定义在 ``esp-at/module_config/module_{platform}_default/IDF_VERSION`` 文件中。
+-  **<compile time>**：固件生成时间。
+-  **<Bin version>**: AT 固件版本信息。版本信息可以在 menuconfig 中修改。
+
+说明
+^^^^
+
+- 如果您在使用 ESP-AT 固件中有任何问题，请先提供 ``AT+GMR`` 版本信息。
 
 示例
 ^^^^
@@ -554,13 +560,15 @@
 
       ::
 
-           - "CONNECT\r\n" 或以 "+LINK_CONN:" 开头的提示信息  
-           - "CLOSED\r\n"  
-           - "WIFI CONNECTED\r\n"  
-           - "WIFI GOT IP\r\n"  
-           - "WIFI DISCONNECT\r\n"  
-           - "+ETH_CONNECTED\r\n"  
-           - "+ETH_DISCONNECTED\r\n"  
+           - "CONNECT\r\n" 或以 "+LINK_CONN:" 开头的提示信息
+           - "CLOSED\r\n"
+           - "WIFI CONNECTED\r\n"
+           - "WIFI GOT IP\r\n"
+           - "WIFI GOT IPv6 LL\r\n"
+           - "WIFI GOT IPv6 GL\r\n"
+           - "WIFI DISCONNECT\r\n"
+           - "+ETH_CONNECTED\r\n"
+           - "+ETH_DISCONNECTED\r\n"
            - 以 "+ETH_GOT_IP:" 开头的提示信息
            - 以 "+STA_CONNECTED:" 开头的提示信息
            - 以 "+STA_DISCONNECTED:" 开头的提示信息
@@ -573,7 +581,7 @@
 
 -  若 :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`，配置更改将被保存在 NVS 分区。
 -  若设 Bit0 为 1，退出 Wi-Fi 透传模式时会提示 ``+QUITT``。
--  若设 Bit1 为 1，将会影响 :ref:`AT+CIPSTART <cmd-START>` 和 :ref:`AT+CIPSERVER <cmd-SERVER>` 命令，系统将提示 “+LINK_CONN:status_type,link_id,ip_type,terminal_type,remote_ip,remote_port,local_port”，而不是 “XX,CONNECT”。
+-  若设 Bit1 为 1，将会影响 :ref:`AT+CIPSTART <cmd-START>` 和 :ref:`AT+CIPSERVER <cmd-SERVER>` 命令，系统将提示 "+LINK_CONN:status_type,link_id,ip_type,terminal_type,remote_ip,remote_port,local_port"，而不是 "XX,CONNECT"。
 
 示例
 ^^^^
@@ -584,6 +592,90 @@
     // 连接时打印详细版提示信息
     // 连接状态发生改变时不打印信息
     AT+SYSMSG=2
+
+.. _cmd-USERRAM:
+
+:ref:`AT+USERRAM <Basic-AT>`: 操作用户的空闲 RAM
+----------------------------------------------------------
+查询命令
+^^^^^^^^
+
+**功能：**
+
+查询用户当前可用的空闲 RAM 大小
+
+**命令：**
+
+::
+
+    AT+USERRAM?
+
+**响应：**
+
+::
+
+    +USERRAM:<size>
+
+    OK
+
+设置命令
+^^^^^^^^
+
+**功能：**
+
+分配、读、写、擦除、释放用户 RAM 空间
+
+**命令：**
+
+::
+
+    AT+USERRAM=<operation>,<size>[,<offset>]
+
+**响应：**
+
+::
+
+    +USERRAM:<length>,<data>    // 只有是读操作时，才会有这个回复
+
+    OK
+
+参数
+^^^^
+
+-  **<operation>**：
+
+   -  0：释放用户 RAM 空间
+   -  1：分配用户 RAM 空间
+   -  2：向用户 RAM 写数据
+   -  3：从用户 RAM 读数据
+   -  4：清除用户 RAM 上的数据
+
+-  **<size>**: 分配/读/写的用户 RAM 大小
+-  **<offset>**: 读/写 RAM 的偏移量。默认：0
+
+说明
+^^^^
+
+- 请在执行任何其他操作之前分配用户 RAM 空间。
+- 当 ``<operator>`` 为 ``write`` 时，系统收到此命令后先换行返回 ``>``，此时您可以输入要写的数据，数据长度应与 ``<length>`` 一致。
+- 当 ``<operator>`` 为 ``read`` 时并且长度大于 1024，ESP-AT 会以同样格式多次回复，最终以 ``\r\nOK\r\n`` 结束。
+
+示例
+^^^^
+
+::
+
+    // 分配 1 KB 用户 RAM 空间
+    AT+USERRAM=1,1024
+
+    // 向 RAM 空间开始位置写入 500 字节数据
+    AT+USERRAM=2,500
+
+    // 从 RAM 空间偏移 100 位置读取 64 字节数据
+    AT+USERRAM=3,64,100
+
+    // 释放用户 RAM 空间
+    AT+USERRAM=0
 
 .. _cmd-SYSFLASH:
 
@@ -651,7 +743,7 @@
 ^^^^
 
 -  使用本命令需烧录 at_customize.bin，详细信息可参考 :doc:`../Compile_and_Develop/How_to_customize_partitions`。
--  擦除分区时，设置指令可省略 ``<offset>`` 和 ``<length>`` 参数，用于完整擦除该目标分区。例如，指令 ``AT+SYSFLASH=0,"ble_data"`` 可擦除整个 “ble_data” 区域。如果擦除分区时不省略 ``<offset>`` 和 ``<length>`` 参数，则这两个参数值要求是 4 KB 的整数倍。
+-  擦除分区时，设置指令可省略 ``<offset>`` 和 ``<length>`` 参数，用于完整擦除该目标分区。例如，指令 ``AT+SYSFLASH=0,"ble_data"`` 可擦除整个 "ble_data" 区域。如果擦除分区时不省略 ``<offset>`` 和 ``<length>`` 参数，则这两个参数值要求是 4 KB 的整数倍。
 -  关于分区的定义可参考 `ESP-IDF 分区表 <https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/api-guides/partition-tables.html>`_。
 -  当 ``<operator>`` 为 ``write`` 时，系统收到此命令后先换行返回 ``>``，此时您可以输入要写的数据，数据长度应与 ``<length>`` 一致。
 -  写分区前，请先擦除该分区。
@@ -664,8 +756,10 @@
 
     // 从 "ble_data" 分区偏移地址 0 处读取 100 字节
     AT+SYSFLASH=2,"ble_data",0,100
+
     // 在 "ble_data" 分区偏移地址 100 处写入 10 字节
     AT+SYSFLASH=1,"ble_data",100,10
+
     // 从 "ble_data" 分区偏移地址 4096 处擦除 8192 字节
     AT+SYSFLASH=0,"ble_data",4096,8192
 
@@ -721,10 +815,13 @@
 
     // 删除某个文件
     AT+FS=0,0,"filename"
+
     // 在某个文件偏移地址 100 处写入 10 字节
     AT+FS=0,1,"filename",100,10
+
     // 从某个文件偏移地址 0 处读取 100 字节
     AT+FS=0,2,"filename",0,100
+
     // 列出根目录下所有文件
     AT+FS=0,4,"."
 
@@ -1074,7 +1171,7 @@ AT 错误代码是一个 32 位十六进制数值，定义如下：
 -  **<wakeup source>**: 唤醒源
 
    -  0：定时器唤醒
-   -  1：UART 唤醒（只适用于 ESP32）
+   -  1：UART 唤醒（保留）
    -  2：GPIO 唤醒
 
 -  **<param1>**:
@@ -1100,9 +1197,11 @@ AT 错误代码是一个 32 位十六进制数值，定义如下：
 
 ::
 
-    AT+SLEEPWKCFG=0,1000  // 定时器唤醒
-    AT+SLEEPWKCFG=1,1     // UART1 唤醒，当前只支持 ESP32 设备
-    AT+SLEEPWKCFG=2,12,0  // GPIO12 置为低电平时唤醒
+    // 定时器唤醒
+    AT+SLEEPWKCFG=0,1000
+
+    // GPIO12 置为低电平时唤醒
+    AT+SLEEPWKCFG=2,12,0
 
 .. _cmd-SYSSTORE:
 
@@ -1159,17 +1258,20 @@ AT 错误代码是一个 32 位十六进制数值，定义如下：
 - 该命令只影响设置命令，不影响查询命令，因为查询命令总是从 RAM 中调用。
 - 本命令会影响以下命令：
 
-  - :ref:`AT+SYSMSG <cmd-SYSMSG>` 
+  - :ref:`AT+SYSMSG <cmd-SYSMSG>`
   - :ref:`AT+CWMODE <cmd-MODE>`
+  - :ref:`AT+CIPV6 <cmd-IPV6>`
   - :ref:`AT+CWJAP <cmd-JAP>`
   - :ref:`AT+CWSAP <cmd-SAP>`
+  - :ref:`AT+CWRECONNCFG <cmd-RECONNCFG>`
   - :ref:`AT+CIPAP <cmd-IPAP>`
   - :ref:`AT+CIPSTA <cmd-IPSTA>`
-  - :ref:`AT+CIPAPMAC <cmd-APMAC>`  
+  - :ref:`AT+CIPAPMAC <cmd-APMAC>`
   - :ref:`AT+CIPSTAMAC <cmd-STAMAC>`
   - :ref:`AT+CIPDNS <cmd-DNS>`
   - :ref:`AT+CIPSSLCCONF <cmd-SSLCCONF>`
   - :ref:`AT+CIPRECONNINTV <cmd-AUTOCONNINT>`
+  - :ref:`AT+CIPTCPOPT <cmd-TCPOPT>`
   - :ref:`AT+CWDHCPS <cmd-DHCPS>`
   - :ref:`AT+CWDHCP <cmd-DHCP>`
   - :ref:`AT+CWSTAPROTO <cmd-STAPROTO>`
@@ -1242,9 +1344,14 @@ AT 错误代码是一个 32 位十六进制数值，定义如下：
 
 ::
 
-    AT+SYSREG=1,0x3F40402C,0x2      // ESP32-S2 IO33 输出，0x3F40402C 由基础地址 0x3F404000 与相对地址 0x2C (GPIO_ENABLE1_REG) 相加而来
-    AT+SYSREG=1,0x3F404010,0x2      // ESP32-S2 IO33 输出高电平
-    AT+SYSREG=1,0x3F404010,0x0      // ESP32-S2 IO33 输出低电平
+    // ESP32-S2 IO33 输出，0x3F40402C 由基础地址 0x3F404000 与相对地址 0x2C (GPIO_ENABLE1_REG) 相加而来
+    AT+SYSREG=1,0x3F40402C,0x2
+
+    // ESP32-S2 IO33 输出高电平
+    AT+SYSREG=1,0x3F404010,0x2
+
+    // ESP32-S2 IO33 输出低电平
+    AT+SYSREG=1,0x3F404010,0x0
 
 .. _cmd-SYSTEMP:
 

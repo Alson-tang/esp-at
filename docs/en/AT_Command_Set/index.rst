@@ -10,13 +10,14 @@ Here is a list of AT commands. Some of them can only work on the ESP32 series, s
    Basic AT Commands <Basic_AT_Commands>
    Wi-Fi AT Commands <Wi-Fi_AT_Commands>
    TCP-IP AT Commands <TCP-IP_AT_Commands>
-   [ESP32 & ESP32C3 Only] Bluetooth® Low Energy AT Commands <BLE_AT_Commands>
+   [ESP32 & ESP32-C3] Bluetooth® Low Energy AT Commands <BLE_AT_Commands>
    [ESP32 Only] Bluetooth® AT Commands <BT_AT_Commands>
    MQTT AT Commands <MQTT_AT_Commands>
    HTTP AT Commands <HTTP_AT_Commands>
    [ESP32 Only] Ethernet AT Commands <Ethernet_AT_Commands>
    [ESP8266 Only] Signaling Test AT Commands <Signaling_Test_AT_Commands>
-   [ESP32 & ESP32S2 & ESP32C3 Only] Driver AT Commands <Driver_AT_Commands>
+   Web server AT Commands <Web_server_AT_Commands>
+   [ESP32 & ESP32S2 & ESP32-C3] Driver AT Commands <Driver_AT_Commands>
    AT Command Set Comparison <AT_Command_Set_Comparison>
 
 It is strongly recommended to read the following sections for some common information on AT commands before you dive into the details of each command.   
@@ -78,6 +79,8 @@ Generic AT command has four types:
    -  ``\,``: escape comma which is not used to separate each parameter
    -  ``\"``: escape double quotation mark which is not used to mark string input
    -  ``\<any>``: escape ``<any>`` character means that drop backslash symbol and only use ``<any>`` character
+
+-  Escape is needed in AT commands only, not elsewhere. For example, when AT command port prints ``>`` and wait for your input, the input does not need to be escaped.
 
    Example::
       
@@ -159,6 +162,10 @@ There are two types of ESP-AT messages returned from the ESP-AT command port:
      - Wi-Fi station interface has connected to an AP
    * - WIFI GOT IP
      - Wi-Fi station interface has got the IPv4 address
+   * - WIFI GOT IPv6 LL
+     - Wi-Fi station interface has got the IPv6 LinkLocal address
+   * - WIFI GOT IPv6 GL
+     - Wi-Fi station interface has got the IPv6 Global address
    * - WIFI DISCONNECT
      - Wi-Fi station interface has disconnected from an AP
    * - +ETH_CONNECTED
