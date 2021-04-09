@@ -227,9 +227,9 @@ void app_main()
 #endif
 
 #ifdef CONFIG_AT_SIGNALING_COMMAND_SUPPORT
-    if (esp_at_fact_cmd_regist() == false) {
-        printf("regist fact cmd fail\r\n");
-    }
+//    if (esp_at_fact_cmd_regist() == false) {
+//        printf("regist fact cmd fail\r\n");
+//    }
 #endif
 
 #ifdef CONFIG_AT_COMMAND_TERMINATOR
