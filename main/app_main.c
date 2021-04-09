@@ -21,7 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-
 #include <stdio.h>
 #include <string.h>
 
@@ -31,7 +30,7 @@
 #include "nvs_flash.h"
 
 #ifdef CONFIG_AT_WIFI_COMMAND_SUPPORT
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_wifi.h"
 #endif
 
@@ -39,13 +38,25 @@
 #include "esp_bt.h"
 #endif
 
-#include "esp_at.h"
+#ifdef CONFIG_AT_QCLOUD_IOT_COMMAND_SUPPORT
+#include "qcloud_iot_at.h"
+#endif
 
+#include "esp_at.h"
 #include "at_interface.h"
+
+#ifdef CONFIG_AT_WEB_SERVER_SUPPORT
+extern void at_web_update_sta_got_ip_flag(bool flag);
+#endif
 
 #ifdef CONFIG_AT_WIFI_COMMAND_SUPPORT
 static esp_err_t at_wifi_event_handler(void *ctx, system_event_t *event)
 {
+#ifdef CONFIG_AT_WEB_SERVER_SUPPORT
+    if (event->event_id == SYSTEM_EVENT_STA_GOT_IP) {
+        at_web_update_sta_got_ip_flag(true);
+    }
+#endif
     esp_err_t ret = esp_at_wifi_event_handler(ctx, event);
 
     return ret;
@@ -55,7 +66,12 @@ static void initialise_wifi(void)
 {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 
+// A workaround to avoid compilation warning (deprecated API: esp_event_loop_init)
+// TODO: esp-at should remove it after v2.2.0.0
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     ESP_ERROR_CHECK( esp_event_loop_init(at_wifi_event_handler, NULL) );
+#pragma GCC diagnostic pop
     
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
@@ -71,7 +87,12 @@ void app_main()
 #endif
 
     nvs_flash_init();
+// A workaround to avoid compilation warning (deprecated API: tcpip_adapter_init)
+// TODO: esp-at should remove it after v2.2.0.0
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     tcpip_adapter_init();
+#pragma GCC diagnostic pop
 #ifdef CONFIG_AT_WIFI_COMMAND_SUPPORT
     initialise_wifi();
 #endif
@@ -232,8 +253,21 @@ void app_main()
     }
 #endif
 
+#ifdef CONFIG_AT_WEB_SERVER_SUPPORT
+    if (esp_at_web_server_cmd_regist() == false) {
+        printf("regist web conf wifi cmd fail\r\n");
+    }
+#endif
+
 #ifdef CONFIG_AT_COMMAND_TERMINATOR
     esp_at_custom_cmd_line_terminator_set((uint8_t*)&cmd_terminator);
 #endif
+
+#ifdef CONFIG_AT_QCLOUD_IOT_COMMAND_SUPPORT
+    if(esp_qcloud_at_init() == false) {
+        printf("qcloud at init fail\r\n");
+    }
+#endif
+
     at_custom_init();
 }

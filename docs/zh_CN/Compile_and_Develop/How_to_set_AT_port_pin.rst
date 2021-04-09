@@ -13,7 +13,7 @@ ESP32 的 UART 管脚可以通过管脚映射的方式进行修改, 具体请参
     TX ---> GPIO1  
     RX ---> GPIO3  
 
-可以通过 ``make menuconfig`` > ``Component config`` > ``Common ESP-related`` > ``UART for console output`` 进行修改.
+可以通过 ``./build.py menuconfig`` > ``Component config`` > ``Common ESP-related`` > ``UART for console output`` 进行修改.
 UART1 作为 AT 命令通讯使用(只能为 UART1, 但管脚可修改)，默认管脚配置在 ``factory_param.bin`` 中, 可以在 :component:`customized_partitions/raw_data/factory_param/factory_param_data.csv` 文件中修改,不同的模组固件可能管脚不同，关于 ``factory_param_data.csv`` 的含义描述，可参阅 ``ESP_AT_Factory_Parameter_Bin.md``.
 比如 ``WROOM-32`` 模组
 
@@ -28,7 +28,7 @@ UART1 作为 AT 命令通讯使用(只能为 UART1, 但管脚可修改)，默认
 +----------------+----------------+
 | version        | 1              |
 +----------------+----------------+
-| module_id      | 1              |
+| reserved1      | 0              |
 +----------------+----------------+
 | tx_max_power   | 78             |
 +----------------+----------------+
@@ -80,7 +80,7 @@ UART1 作为 AT 命令通讯使用(只能为 UART1, 但管脚可修改)，默认
     +----------------+----------------+
     | version        | 1              |
     +----------------+----------------+
-    | module_id      | 1              |
+    | reserved1      | 0              |
     +----------------+----------------+
     | tx_max_power   | 78             |
     +----------------+----------------+
@@ -116,7 +116,7 @@ ESP8266 平台
 
 如果想要使用 GPIO1 (TX)、GPIO3 (RX) 同时作为 Log 打印和 AT 命令输入，可以采用如下操作(WROOM-02 为例):
 
-1.  ``make menuconfig`` > ``Component config`` > ``ESP8266-specific`` > ``UART for console output`` > ``Default: UART0``
+1.  ``./build.py menuconfig`` > ``Component config`` > ``ESP8266-specific`` > ``UART for console output`` > ``Default: UART0``
 2.  修改 :component:`customized_partitions/raw_data/factory_param/factory_param_data.csv` 文件中 ``WROOM-02`` 模组的 ``uart_tx_pin`` 和 ``uart_rx_pin``\ 分别为 1 和 3，如下
 
     +----------------+------------------+
@@ -141,6 +141,112 @@ ESP8266 平台
     | uart_rts_pin   | -1               |
     +----------------+------------------+
     | ...            | ...              |
+    +----------------+------------------+
+
+3.  然后保存，重新编译固件，并完全烧录固件即可.注意：一定要同时烧录对应的 ``factory_param.bin``.
+
+ESP32-C3 平台
+--------------
+
+ESP32-C3 的 UART 管脚可以通过管脚映射的方式进行修改, 具体请参见 `ESP32-C3 系列芯片技术规格书 <https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_cn.pdf>`__, 在官方 release 固件中，UART0 作为 Log 的打印，默认管脚为
+
+::
+
+    TX ---> GPIO21  
+    RX ---> GPIO20 
+
+可以通过 ``./build.py menuconfig`` > ``Component config`` > ``Common ESP-related`` > ``Channel for console output`` 进行修改.
+UART1 作为 AT 命令通讯使用(只能为 UART1, 但管脚可修改)，默认管脚配置在 ``factory_param.bin`` 中, 可以在 :component:`customized_partitions/raw_data/factory_param/factory_param_data.csv` 文件中修改,不同的模组固件可能管脚不同，关于 ``factory_param_data.csv`` 的含义描述，可参阅 ``ESP_AT_Factory_Parameter_Bin.md``.
+比如 ``MINI-1`` 模组
+
++----------------+------------------+
+| Parameter      | Value            |
++================+==================+
+| platform       | PLATFORM_ESP32C3 |
++----------------+------------------+
+| module_name    | MINI-1           |
++----------------+------------------+
+| magic_flag     | 0xfcfc           |
++----------------+------------------+
+| version        | 2                |
++----------------+------------------+
+| module_id      | 1                |
++----------------+------------------+
+| tx_max_power   | 78               |
++----------------+------------------+
+| uart_port      | 1                |
++----------------+------------------+
+| start_channel  | 1                |
++----------------+------------------+
+| channel_num    | 13               |
++----------------+------------------+
+| country_code   | CN               |
++----------------+------------------+
+| uart_baudrate  | 115200           |
++----------------+------------------+
+| uart_tx_pin    | 7                |
++----------------+------------------+
+| uart_rx_pin    | 6                |
++----------------+------------------+
+| uart_cts_pin   | 5                |
++----------------+------------------+
+| uart_rts_pin   | 4                |
++----------------+------------------+
+| tx_control_pin | -1               |
++----------------+------------------+
+| rx_control_pin | -1               |
++----------------+------------------+
+
+发送命令的 AT port 管脚分别为
+
+::
+
+    TX ---> GPIO7  
+    RX ---> GPIO6  
+    CTS ---> GPIO5  
+    RTX ---> GPIO4  
+
+如果想要使用 GPIO21 (TX)、GPIO20 (RX) 同时作为 Log 打印和 AT 命令输入，可以采用如下操作:
+
+1.  打开 :component:`customized_partitions/raw_data/factory_param/factory_param_data.csv` 文件
+2.  修改 ``MINI-1`` 模组的 ``uart_port`` 为 0，\ ``uart_tx_pin`` 为 21 以及 ``uart_rx_pin`` 为 20，如下
+
+    +----------------+------------------+
+    | Parameter      | Value            |
+    +================+==================+
+    | platform       | PLATFORM_ESP32C3 |
+    +----------------+------------------+
+    | module_name    | MINI-1           |
+    +----------------+------------------+
+    | magic_flag     | 0xfcfc           |
+    +----------------+------------------+
+    | version        | 2                |
+    +----------------+------------------+
+    | module_id      | 1                |
+    +----------------+------------------+
+    | tx_max_power   | 78               |
+    +----------------+------------------+
+    | uart_port      | 0                |
+    +----------------+------------------+
+    | start_channel  | 1                |
+    +----------------+------------------+
+    | channel_num    | 13               |
+    +----------------+------------------+
+    | country_code   | CN               |
+    +----------------+------------------+
+    | uart_baudrate  | 115200           |
+    +----------------+------------------+
+    | uart_tx_pin    | 21               |
+    +----------------+------------------+
+    | uart_rx_pin    | 20               |
+    +----------------+------------------+
+    | uart_cts_pin   | -1               |
+    +----------------+------------------+
+    | uart_rts_pin   | -1               |
+    +----------------+------------------+
+    | tx_control_pin | -1               |
+    +----------------+------------------+
+    | rx_control_pin | -1               |
     +----------------+------------------+
 
 3.  然后保存，重新编译固件，并完全烧录固件即可.注意：一定要同时烧录对应的 ``factory_param.bin``.

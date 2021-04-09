@@ -81,7 +81,7 @@ Execute Command
 
 ::
 
-    AT+GMR  
+    AT+GMR
 
 **Response:**
 
@@ -97,10 +97,15 @@ Execute Command
 Parameters
 ^^^^^^^^^^
 
--  **<AT version info>**: information about the AT version.
--  **<SDK version info>**: information about the SDK version.
--  **<compile time>**: the time to compile the BIN.
--  **<Bin version>**: bin version.
+-  **<AT version info>**: information about the esp-at core library version, which is under the directory: ``esp-at/components/at/lib/``. Code is closed source, no plan to open.
+-  **<SDK version info>**: information about the esp-at platform sdk version, which is defined in file: ``esp-at/module_config/module_{platform}_default/IDF_VERSION``
+-  **<compile time>**: the time to compile the firmware.
+-  **<Bin version>**: esp-at firmware version. Version information can be modified in menuconfig.
+
+Note
+^^^^^
+
+-  If you have any issues on esp-at firmware, please provide ``AT+GMR`` version information firstly.
 
 Example
 ^^^^^^^^
@@ -567,26 +572,28 @@ Parameter
 
       ::
 
-           - "CONNECT\r\n" or the message prefixed with "+LINK_CONN:"  
-           - "CLOSED\r\n"  
-           - "WIFI CONNECTED\r\n"  
-           - "WIFI GOT IP\r\n"  
-           - "WIFI DISCONNECT\r\n"  
-           - "+ETH_CONNECTED\r\n"  
-           - "+ETH_DISCONNECTED\r\n"  
-           - the message prefixed with "+ETH_GOT_IP:"  
-           - the message prefixed with "+STA_CONNECTED:"  
-           - the message prefixed with "+STA_DISCONNECTED:"  
-           - the message prefixed with "+DIST_STA_IP:"  
-           - the message prefixed with "+BLECONN:"  
-           - the message prefixed with "+BLEDISCONN:"  
+           - "CONNECT\r\n" or the message prefixed with "+LINK_CONN:"
+           - "CLOSED\r\n"
+           - "WIFI CONNECTED\r\n"
+           - "WIFI GOT IP\r\n"
+           - "WIFI GOT IPv6 LL\r\n"
+           - "WIFI GOT IPv6 GL\r\n"
+           - "WIFI DISCONNECT\r\n"
+           - "+ETH_CONNECTED\r\n"
+           - "+ETH_DISCONNECTED\r\n"
+           - the message prefixed with "+ETH_GOT_IP:"
+           - the message prefixed with "+STA_CONNECTED:"
+           - the message prefixed with "+STA_DISCONNECTED:"
+           - the message prefixed with "+DIST_STA_IP:"
+           - the message prefixed with "+BLECONN:"
+           - the message prefixed with "+BLEDISCONN:"
 
 Notes
 ^^^^^
 
 -  The configuration changes will be saved in the NVS area if ``AT+SYSSTORE=1``.
 -  If you set Bit0 to 1, it will prompt “+QUITT” when you quit Wi-Fi passthrough mode.
--  If you set Bit1 to 1, it will impact the information of command :ref:`AT+CIPSTART <cmd-START>` and :ref:`AT+CIPSERVER <cmd-SERVER>`. It will supply “+LINK_CONN:status_type,link_id,ip_type,terminal_type,remote_ip,remote_port,local_port” instead of “XX,CONNECT”.
+-  If you set Bit1 to 1, it will impact the information of command :ref:`AT+CIPSTART <cmd-START>` and :ref:`AT+CIPSERVER <cmd-SERVER>`. It will supply "+LINK_CONN:status_type,link_id,ip_type,terminal_type,remote_ip,remote_port,local_port" instead of "XX,CONNECT".
 
 Example
 ^^^^^^^^
@@ -608,7 +615,7 @@ Query Command
 
 **Function:**
 
-Query user free RAM to be used.
+Query the current available user's RAM size.
 
 **Command:**
 
@@ -639,6 +646,7 @@ Operate user's free RAM
 **Response:**
 
 ::
+    +USERRAM:<length>,<data>    // esp-at returns this response only when the operator is ``read``
 
     OK
 
@@ -661,6 +669,24 @@ Notes
 
 -  Please malloc the RAM size before you perform any other operations.
 -  If the operator is ``write``, wrap return ``>`` after the write command, then you can send the data that you want to write. The length should be parameter ``<length>``.
+-  If the operator is ``read`` and the length is bigger than 1024, ESP-AT will reply multiple times in the same format, and eventually end up with ``\r\nOK\r\n``.
+
+Example
+^^^^^^^^
+
+::
+
+    // malloc 1 KB user's RAM
+    AT+USERRAM=1,1024
+
+    // write 500 bytes to RAM (offset: 0)
+    AT+USERRAM=2,500
+
+    // read 64 bytes from RAM offset 100
+    AT+USERRAM=3,64,100
+
+    // free the user's RAM
+    AT+USERRAM=0
 
 .. _cmd-SYSFLASH:
 
@@ -741,8 +767,10 @@ Example
 
     // read 100 bytes from the "ble_data" partition offset 0.
     AT+SYSFLASH=2,"ble_data",0,100
+
     // write 10 bytes to the "ble_data" partition offset 100.
     AT+SYSFLASH=1,"ble_data",100,10
+
     // erase 8192 bytes from the "ble_data" partition offset 4096.
     AT+SYSFLASH=0,"ble_data",4096,8192
 
@@ -798,10 +826,13 @@ Example
 
     // delete a file.
     AT+FS=0,0,"filename"
+
     // write 10 bytes to offset 100 of a file.
     AT+FS=0,1,"filename",100,10
+
     // read 100 bytes from offset 0 of a file.
     AT+FS=0,2,"filename",0,100
+
     // list all files in the root directory.
     AT+FS=0,4,"."
 
@@ -1151,7 +1182,7 @@ Parameters
 -  **<wakeup source>**:
 
    -  0: wakeup by a timer.
-   -  1: wakeup by UART (ESP32 only).
+   -  1: wakeup by UART (reserved).
    -  2: wakeup by GPIO.
 
 -  **<param1>**:
@@ -1177,9 +1208,11 @@ Example
 
 ::
 
-    AT+SLEEPWKCFG=0,1000  // Timer wakeup
-    AT+SLEEPWKCFG=1,1     // UART1 wakeup, only Support ESP32
-    AT+SLEEPWKCFG=2,12,0  // GPIO12 wakeup, low level
+    // Timer wakeup
+    AT+SLEEPWKCFG=0,1000
+
+    // GPIO12 wakeup, low level
+    AT+SLEEPWKCFG=2,12,0
 
 .. _cmd-SYSSTORE:
 
@@ -1236,17 +1269,20 @@ Note
 - This command affects set commands only. Query commands are always fetched from RAM.
 - Affected commands:
 
-  - :ref:`AT+SYSMSG <cmd-SYSMSG>` 
+  - :ref:`AT+SYSMSG <cmd-SYSMSG>`
   - :ref:`AT+CWMODE <cmd-MODE>`
+  - :ref:`AT+CIPV6 <cmd-IPV6>`
   - :ref:`AT+CWJAP <cmd-JAP>`
   - :ref:`AT+CWSAP <cmd-SAP>`
+  - :ref:`AT+CWRECONNCFG <cmd-RECONNCFG>`
   - :ref:`AT+CIPAP <cmd-IPAP>`
   - :ref:`AT+CIPSTA <cmd-IPSTA>`
-  - :ref:`AT+CIPAPMAC <cmd-APMAC>`  
+  - :ref:`AT+CIPAPMAC <cmd-APMAC>`
   - :ref:`AT+CIPSTAMAC <cmd-STAMAC>`
   - :ref:`AT+CIPDNS <cmd-DNS>`
   - :ref:`AT+CIPSSLCCONF <cmd-SSLCCONF>`
   - :ref:`AT+CIPRECONNINTV <cmd-AUTOCONNINT>`
+  - :ref:`AT+CIPTCPOPT <cmd-TCPOPT>`
   - :ref:`AT+CWDHCPS <cmd-DHCPS>`
   - :ref:`AT+CWDHCP <cmd-DHCP>`
   - :ref:`AT+CWSTAPROTO <cmd-STAPROTO>`
@@ -1319,9 +1355,14 @@ Example
 
 ::
 
-    AT+SYSREG=1,0x3F40402C,0x2      // Enable ESP32-S2 IO33 output, 0x3F40402C means base address 0x3F404000 add relative address 0x2C (GPIO_ENABLE1_REG)
-    AT+SYSREG=1,0x3F404010,0x2      // ESP32-S2 IO33 output high
-    AT+SYSREG=1,0x3F404010,0x0      // ESP32-S2 IO33 output low
+    // Enable ESP32-S2 IO33 output, 0x3F40402C means base address 0x3F404000 add relative address 0x2C (GPIO_ENABLE1_REG)
+    AT+SYSREG=1,0x3F40402C,0x2
+
+    // ESP32-S2 IO33 output high
+    AT+SYSREG=1,0x3F404010,0x2
+
+    // ESP32-S2 IO33 output low
+    AT+SYSREG=1,0x3F404010,0x0
 
 .. _cmd-SYSTEMP:
 

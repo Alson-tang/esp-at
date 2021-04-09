@@ -9,7 +9,6 @@ AT Binary Lists
    
    ESP32 AT binaries <ESP32_AT_binaries>
    ESP32-S2 AT binaries <ESP32-S2_AT_binaries>
-   ESP32-C3 AT binaries <ESP32-C3_AT_binaries>
    ESP8266 AT binaries <ESP8266_AT_binaries>
 
 Each of the linked above ESP-AT-Bin files contains several binaries for some specific functions, and the factory/factory/xxx.bin is the combination of all binaries. So user can only download the ``factory/factory_xxx.bin`` to address 0, or several binaries to different addresses according to ``ESP-AT-Bin/download.config``.
@@ -59,7 +58,7 @@ Each of the linked above ESP-AT-Bin files contains several binaries for some spe
          - GPIO17, GPIO21, GPIO20, GPIO19
          - ``factory_param_MINI.bin``
 
-    - **ESP32C3 Series**
+    - **ESP32-C3 Series**
 
     .. list-table::
        :header-rows: 1
@@ -67,8 +66,8 @@ Each of the linked above ESP-AT-Bin files contains several binaries for some spe
        * - Modules
          - UART Pins (TX, RX, CTS, RTS)
          - Factory Parameter Bin 
-       * - ESP32C3-MINI Series
-         - GPIO18, GPIO19, GPIO4, GPIO3
+       * - ESP32-C3-MINI Series
+         - GPIO7, GPIO6, GPIO5, GPIO4
          - ``factory_param_MINI-1.bin``
 
     - **ESP8266 Series**
@@ -83,7 +82,7 @@ Each of the linked above ESP-AT-Bin files contains several binaries for some spe
          - GPIO15, GPIO13, GPIO3, GPIO1
          - ``factory_param_WROOM-02.bin``
 
--   ``ble_data.bin`` is to provide BLE services when the ESP32 and ESP32C3 work as a BLE server;
+-   ``ble_data.bin`` is to provide BLE services when the ESP32 and ESP32-C3 work as a BLE server;
 -   ``server_cert.bin``, ``server_key.bin`` and ``server_ca.bin`` are examples of SSL server‘s certificate;
 -   ``client_cert.bin``, ``client_key.bin`` and ``client_ca.bin`` are examples of SSL client‘s certificate.
 

@@ -132,6 +132,23 @@ config AT_HTTP_COMMAND_SUPPORT
         Please enlarge AT_PROCESS_TASK_STACK_SIZE to be more than 4096 if HTTPS link need to establish,
         otherwise, unexpected crash probably occur due to AT process task overflow.
 
+if IDF_TARGET_ESP32C3
+config AT_BLE_COMMAND_SUPPORT
+    bool "AT ble command support."
+    default "y"
+    depends on AT_ENABLE && BT_ENABLED
+
+config AT_BLE_HID_COMMAND_SUPPORT
+    bool "AT ble hid command support."
+    default "y"
+    depends on AT_ENABLE && BT_ENABLED
+
+config AT_BLUFI_COMMAND_SUPPORT
+    bool "AT blufi command support."
+    default "n"
+    depends on AT_ENABLE && BT_ENABLED
+endif
+
 if IDF_TARGET_ESP32    
 config AT_BLE_COMMAND_SUPPORT
     bool "AT ble command support."
@@ -250,6 +267,21 @@ config AT_EAP_COMMAND_SUPPORT
     default "n"
     depends on AT_ENABLE
 
+config AT_WEB_SERVER_SUPPORT
+    bool "AT WEB Server command support."
+    default "n"
+    depends on AT_ENABLE
+    help
+      Please enable this configure if you want use web server.
+ 
+config AT_WEB_USE_FATFS
+    bool "Use fatfs to store html"
+    default "n"
+    depends on AT_WEB_SERVER_SUPPORT && !IDF_TARGET_ESP8266
+    help
+        If enable this configure, html will be stored in fatfs(Please enable AT FS Command).
+        Otherwise, html file will be compiled as embedded code.
+
 config AT_OTA_SUPPORT
     bool "AT OTA command support."
     default "y"
@@ -296,4 +328,20 @@ config ESP_AT_FW_VERSION
     help
       The maximum length of the string is 128 characters.
       If more than 128 characters, it will be invalid.
+
+menu "QCloud IoT"
+config AT_QCLOUD_IOT_COMMAND_SUPPORT
+
+    bool "AT QCloud IoT command support."
+    default "n"
+    depends on AT_ENABLE
+    help
+    This configuration can only be used when the platform name is PLATFORM_ESP32C3 and the module name is ESP32C3_QCLOUD.
+
+config AT_QCLOUD_IOT_GENERATE_FACTORY_INFO
+
+    bool "Automatically generate qcloud_modinfo.bin, qcloud_devinfo.bin and qcloud_prdinfo.bin"
+    default "y"
+    depends on AT_QCLOUD_IOT_COMMAND_SUPPORT
+endmenu
 endmenu

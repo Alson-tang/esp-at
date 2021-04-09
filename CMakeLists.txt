@@ -48,6 +48,8 @@ add_compile_options("-DESP_AT_PROJECT_COMMIT_ID=\"${ESP_AT_PROJECT_COMMIT_ID}\""
 
 include(${IDF_PATH}/tools/cmake/project.cmake)
 
+set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/components/third_clouds)
+
 project(esp-at)
 
 if (CONFIG_AT_CUSTOMIZED_PARTITION_TABLE_SUPPORT)
