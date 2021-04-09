@@ -87,7 +87,7 @@ jobs:
         pip install --upgrade pip
         pip install pyyaml xlrd
         mkdir build
-        echo -e "{\"platform\": \"PLATFORM_ESP32\", \"module\": \"WROVER-32\", \"silence\": 1}" > build/module_info.json
+        echo -e "{\"platform\": \"PLATFORM_ESP32\", \"module\": \"WROVER-32\", \"silence\": 0}" > build/module_info.json
         ./build.py reconfigure || echo "skip exception"
       shell: bash
     - name: Install dependencies
