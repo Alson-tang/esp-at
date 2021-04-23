@@ -264,7 +264,7 @@ void app_main()
 #endif
 
 #ifdef CONFIG_AT_QCLOUD_IOT_COMMAND_SUPPORT
-    if(esp_qcloud_at_init() == false) {
+    if(esp_at_qcloud_iot_cmd_regist() == false) {
         printf("qcloud at init fail\r\n");
     }
 #endif
