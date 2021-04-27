@@ -35,6 +35,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -49,6 +50,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
@@ -102,6 +105,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -116,6 +120,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
@@ -169,6 +175,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -183,6 +190,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
@@ -235,6 +244,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -249,6 +259,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
@@ -301,6 +313,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -315,6 +328,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
@@ -367,6 +382,7 @@ jobs:
         AT_OTA_TOKEN_ESP32_PICO_D4: ${{ secrets.AT_OTA_TOKEN_ESP32_PICO_D4 }}
         AT_OTA_TOKEN_ESP32_SOLO_1: ${{ secrets.AT_OTA_TOKEN_ESP32_SOLO_1 }}
         AT_OTA_TOKEN_ESP32_MINI_1: ${{ secrets.AT_OTA_TOKEN_ESP32_MINI_1 }}
+        AT_OTA_TOKEN_ESP32_QCLOUD: ${{ secrets.AT_OTA_TOKEN_ESP32_QCLOUD }}
       run: |
         cd components/at/private_include
         rm -f at_ota_token.h
@@ -381,6 +397,8 @@ jobs:
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_SOLO_1 \"$AT_OTA_TOKEN_ESP32_SOLO_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
         echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_MINI_1 \"$AT_OTA_TOKEN_ESP32_MINI_1\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
+        echo -e "#define CONFIG_ESP_AT_OTA_SSL_TOKEN_ESP32_QCLOUD \"$AT_OTA_TOKEN_ESP32_QCLOUD\"" >> at_ota_token.h
         cd -
         
         python ./esp-idf/tools/idf_tools.py --non-interactive install && eval "$(python ./esp-idf/tools/idf_tools.py --non-interactive export)" || exit 1
